@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Spotify credentials — NEVER commit
+spotify.env
+spotify_token.json

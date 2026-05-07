@@ -134,7 +134,7 @@ def main() -> int:
     logger.info("Latest episode URI: %s", episode_uri)
 
     # Start silent to mask the amplifier click on activation
-    set_volume(token, device_id, 0)
+    set_volume(token, device_id, 2)
 
     transfer_playback(token, device_id)
     start_playback(token, device_id, episode_uri)

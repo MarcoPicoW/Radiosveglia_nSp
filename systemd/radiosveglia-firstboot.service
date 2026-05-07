@@ -1,0 +1,19 @@
+[Unit]
+Description=Radiosveglia -- first-boot system configuration
+# Run once: the ExecStartPost touch file acts as a sentinel.
+ConditionPathExists=!/var/lib/radiosveglia/firstboot-done
+After=network-online.target multi-user.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/radiosveglia/scripts/firstboot.sh
+ExecStartPost=/bin/mkdir -p /var/lib/radiosveglia
+ExecStartPost=/bin/touch /var/lib/radiosveglia/firstboot-done
+RemainAfterExit=yes
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

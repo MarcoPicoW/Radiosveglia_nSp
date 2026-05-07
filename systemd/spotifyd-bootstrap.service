@@ -1,0 +1,18 @@
+[Unit]
+Description=Radiosveglia -- download spotifyd slim binary (first boot only)
+After=network-online.target
+Wants=network-online.target
+# Run only if spotifyd is not already installed.
+ConditionPathExists=!/usr/local/bin/spotifyd
+
+[Service]
+Type=oneshot
+Environment=XDG_RUNTIME_DIR=/run/user/%U
+ExecStart=%h/scripts/spotifyd-bootstrap.sh
+RemainAfterExit=yes
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

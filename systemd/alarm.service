@@ -1,0 +1,18 @@
+[Unit]
+Description=Radiosveglia -- Spotify alarm (latest podcast episode)
+After=spotifyd.service network-online.target
+Wants=spotifyd.service network-online.target
+
+[Service]
+Type=oneshot
+# D-Bus session bus (for consistency; alarm.py uses HTTP API only).
+Environment=XDG_RUNTIME_DIR=/run/user/%U
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/%U/bus
+
+# The alarm script reads all settings from /boot/firmware/radiosveglia.conf.
+# Secrets (client_id, client_secret) are embedded in spotify_token.json
+# after running setup-spotify.py. No separate env file is required.
+ExecStart=/usr/bin/python3 %h/alarm/alarm.py
+
+StandardOutput=journal
+StandardError=journal

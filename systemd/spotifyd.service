@@ -1,0 +1,20 @@
+[Unit]
+Description=Spotify daemon (spotifyd) -- Radiosveglia
+Documentation=https://docs.spotifyd.rs
+After=network-online.target sound.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# D-Bus session bus required for MPRIS / playerctl.
+# %U is expanded to the UID of the user running this service.
+Environment=XDG_RUNTIME_DIR=/run/user/%U
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/%U/bus
+
+ExecStart=/usr/local/bin/spotifyd --no-daemon --config-path %h/.config/spotifyd/spotifyd.conf
+
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

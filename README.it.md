@@ -79,7 +79,7 @@ Le casse vanno ai due output dell'amplificatore. Schema dettagliato in [`docs/us
 2. Apri **[Raspberry Pi Imager](https://www.raspberrypi.com/software/)**
 3. *Choose OS* → *Use custom* → seleziona il file scaricato
 4. *Choose Storage* → la tua microSD
-5. Clicca l'icona ⚙️ "Edit settings":
+5. Clicca l'icona "Edit settings":
    - [] Enable SSH (con password)
    - [] Set username and password — **lascia username `radiosveglia`** (importante!)
    - [] Configure wireless LAN (SSID + password della tua Wi-Fi)

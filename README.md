@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎵 Radiosveglia_nSp
+# Radiosveglia_nSp
 
 ### Smart Spotify Alarm Clock for Raspberry Pi Zero 2 W
 
@@ -10,11 +10,11 @@
 [![Platform: Pi Zero 2 W](https://img.shields.io/badge/Platform-Pi%20Zero%202%20W-c51a4a)](https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/)
 [![OS: Trixie](https://img.shields.io/badge/OS-Debian%20Trixie-a80030)](https://www.debian.org/releases/trixie/)
 
-[**📥 Download latest release**](https://github.com/USER/Radiosveglia_nSp/releases/latest)
+[**Download latest release**](https://github.com/USER/Radiosveglia_nSp/releases/latest)
 &nbsp;·&nbsp;
-[**📖 User guide**](docs/user-guide.md)
+[**User guide**](docs/user-guide.md)
 &nbsp;·&nbsp;
-[**🔧 For developers**](DEVELOPMENT.md)
+[**For developers**](DEVELOPMENT.md)
 &nbsp;·&nbsp;
 [**🇮🇹 Italiano**](README.it.md)
 
@@ -25,7 +25,7 @@
 
 ---
 
-## ⚠️ Prerequisites
+## Prerequisites
 
 > **This project requires a Spotify Premium account.**
 >
@@ -33,14 +33,14 @@
 
 ---
 
-## ✨ What it does
+## What it does
 
-- ⏰ **Automated alarm** at configurable times — different schedule for each day of the week
-- 🎙️ **Latest podcast episode** fetched fresh every morning via the Spotify Web API
-- 🔊 **Quality audio** through a MAX98357A I2S amplifier and external speakers
-- 🎚️ **Volume fade-in** at startup to soften the amplifier "click"
-- 🌐 **Spotify Connect** built in — during the day the alarm clock doubles as a Wi-Fi speaker for Spotify
-- 🤖 **Fully headless** — no screen, no keyboard, runs unattended
+- **Automated alarm** at configurable times — different schedule for each day of the week
+- **Latest podcast episode** fetched fresh every morning via the Spotify Web API
+- **Quality audio** through a MAX98357A I2S amplifier and external speakers
+- **Volume fade-in** at startup to soften the amplifier "click"
+- **Spotify Connect** built in — during the day the alarm clock doubles as a Wi-Fi speaker for Spotify
+- **Fully headless** — no screen, no keyboard, runs unattended
 
 ## 🛒 Hardware needed
 
@@ -55,9 +55,9 @@
 
 **Total: ~70 € / $80** (excluding basic tools like a soldering iron if your GPIO pins aren't pre-soldered).
 
-> 💡 **Note**: for the initial setup you'll also need any computer (Windows, Mac, or Linux) with a web browser. No Pi 5 needed, no Mac M2 — just any machine that can open a webpage.
+> **Note**: for the initial setup you'll also need any computer (Windows, Mac, or Linux) with a web browser. No Pi 5 needed, no Mac M2 — just any machine that can open a webpage.
 
-## 🚀 Installation in 5 steps
+## Installation in 5 steps
 
 ### Step 1 — Wire the hardware
 
@@ -80,10 +80,10 @@ The speakers go to the two outputs of the amplifier. Detailed schematic in [`doc
 3. *Choose OS* → *Use custom* → select the downloaded file
 4. *Choose Storage* → your microSD
 5. Click the ⚙️ "Edit settings" icon:
-   - ✅ Enable SSH (with password)
-   - ✅ Set username and password — **leave the username as `radiosveglia`** (important!)
-   - ✅ Configure wireless LAN (your Wi-Fi SSID + password)
-   - ✅ Set hostname: `radiosveglia`
+   - [] Enable SSH (with password)
+   - [] Set username and password — **leave the username as `radiosveglia`** (important!)
+   - [] Configure wireless LAN (your Wi-Fi SSID + password)
+   - [] Set hostname: `radiosveglia`
 6. *Write* — wait a few minutes
 
 > ⚠️ **Keep `radiosveglia` as the username**. If you change it, you'll need to manually patch the systemd service paths. See [DEVELOPMENT.md](DEVELOPMENT.md).
@@ -112,7 +112,7 @@ device_name = Radiosveglia
 
 **To skip the alarm on a given day**, leave the field blank:
 ```ini
-saturday =       # no alarm on Saturday 😴
+saturday =       # no alarm on Saturday
 ```
 
 **How to find your podcast's `show_id`**: open Spotify, find the show, share the link → `https://open.spotify.com/show/16dmTJvMre4YDTUYpuJtuZ`. The ID is the part after `/show/`.
@@ -194,7 +194,7 @@ journalctl --user -u alarm.service -n 20
 
 If everything works, the speakers start playing the latest episode of the podcast at increasing volume. **You made it!** 🎉
 
-## ⏰ Changing the alarm
+## Changing the alarm
 
 You can change the times anytime:
 
@@ -211,27 +211,27 @@ sudo nano /boot/firmware/radiosveglia.conf
 sudo reboot
 ```
 
-## 🐛 Something not working?
+## Something not working?
 
 See [Troubleshooting](docs/user-guide.md#troubleshooting). Common issues:
 
-- ❓ **The Pi isn't on the network** → check Wi-Fi SSID/password from Step 2.5
-- ❓ **No audio from the speakers** → MAX98357A wiring, check `aplay -l`
-- ❓ **"Device 'Radiosveglia' not found"** → spotifyd didn't start, check logs
-- ❓ **A click sound at startup** → known MAX98357A behavior, the fade-in mitigates but doesn't eliminate it
+- **The Pi isn't on the network** → check Wi-Fi SSID/password from Step 2.5
+- **No audio from the speakers** → MAX98357A wiring, check `aplay -l`
+- **"Device 'Radiosveglia' not found"** → spotifyd didn't start, check logs
+- **A click sound at startup** → known MAX98357A behavior, the fade-in mitigates but doesn't eliminate it
 
-## 🤝 Contributing
+## Contributing
 
 Pull requests welcome! See [DEVELOPMENT.md](DEVELOPMENT.md) for:
 - how to rebuild the image
 - how to modify the code
 - how to test changes
 
-## 📜 License
+## License
 
 [MIT](LICENSE) — do whatever you want with it, attribution appreciated.
 
-## 🙏 Credits
+## Credits
 
 - [`spotifyd`](https://github.com/Spotifyd/spotifyd) — Spotify Connect daemon
 - [Adafruit](https://www.adafruit.com/) — MAX98357A breakout board
@@ -242,5 +242,5 @@ Pull requests welcome! See [DEVELOPMENT.md](DEVELOPMENT.md) for:
 ---
 
 <div align="center">
-<sub>Built with ☕ and Pi Zero. <a href="https://github.com/USER/Radiosveglia_nSp/issues">Issues & feedback</a></sub>
+<sub>Built with many Beers and Pi Zero. <a href="https://github.com/USER/Radiosveglia_nSp/issues">Issues & feedback</a></sub>
 </div>

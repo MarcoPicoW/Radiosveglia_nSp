@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎵 Radiosveglia_nSp
+# Radiosveglia_nSp
 
 ### Smart Spotify Alarm Clock per Raspberry Pi Zero 2 W
 
@@ -10,11 +10,11 @@
 [![Platform: Pi Zero 2 W](https://img.shields.io/badge/Platform-Pi%20Zero%202%20W-c51a4a)](https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/)
 [![OS: Trixie](https://img.shields.io/badge/OS-Debian%20Trixie-a80030)](https://www.debian.org/releases/trixie/)
 
-[**📥 Scarica l'ultima versione**](https://github.com/USER/Radiosveglia_nSp/releases/latest)
+[**Scarica l'ultima versione**](https://github.com/USER/Radiosveglia_nSp/releases/latest)
 &nbsp;·&nbsp;
-[**📖 Guida utente**](docs/user-guide.md)
+[**Guida utente**](docs/user-guide.md)
 &nbsp;·&nbsp;
-[**🔧 Per sviluppatori**](DEVELOPMENT.md)
+[**Per sviluppatori**](DEVELOPMENT.md)
 &nbsp;·&nbsp;
 [**🇬🇧 English**](README.md)
 
@@ -25,7 +25,7 @@
 
 ---
 
-## ⚠️ Prerequisiti
+## Prerequisiti
 
 > **Questo progetto richiede un account Spotify Premium.**
 >
@@ -33,16 +33,16 @@
 
 ---
 
-## ✨ Cosa fa
+## Cosa fa
 
-- ⏰ **Sveglia automatica** a orari configurabili — anche diversi per ogni giorno della settimana
-- 🎙️ **Ultimo episodio del podcast** che preferisci, scaricato fresco ogni mattina via Spotify Web API
-- 🔊 **Audio di qualità** tramite amplificatore I2S MAX98357A e casse esterne
-- 🎚️ **Volume fade-in** all'avvio per ridurre il "click" dell'amplificatore
-- 🌐 **Spotify Connect** integrato — di giorno la radiosveglia diventa una cassa Wi-Fi per Spotify
-- 🤖 **Completamente headless** — niente schermo, niente tastiera, gira da sola
+- **Sveglia automatica** a orari configurabili — anche diversi per ogni giorno della settimana
+- **Ultimo episodio del podcast** che preferisci, scaricato fresco ogni mattina via Spotify Web API
+- **Audio di qualità** tramite amplificatore I2S MAX98357A e casse esterne
+- **Volume fade-in** all'avvio per ridurre il "click" dell'amplificatore
+- **Spotify Connect** integrato — di giorno la radiosveglia diventa una cassa Wi-Fi per Spotify
+- **Completamente headless** — niente schermo, niente tastiera, gira da sola
 
-## 🛒 Hardware necessario
+## Hardware necessario
 
 | Componente | Note | Costo indicativo |
 |------------|------|------------------|
@@ -55,9 +55,9 @@
 
 **Totale: ~70 €** (esclusi attrezzi base come saldatore se non hai i pin pre-saldati).
 
-> 💡 **Nota**: per il setup iniziale ti serve anche un PC qualunque (Windows, Mac o Linux) con un browser. Niente Pi 5, niente Mac M2, basta una macchina che apra una pagina web.
+> **Nota**: per il setup iniziale ti serve anche un PC qualunque (Windows, Mac o Linux) con un browser. Niente Pi 5, niente Mac M2, basta una macchina che apra una pagina web.
 
-## 🚀 Installazione in 5 step
+## Installazione in 5 step
 
 ### Step 1 — Cabla l'hardware
 
@@ -80,10 +80,10 @@ Le casse vanno ai due output dell'amplificatore. Schema dettagliato in [`docs/us
 3. *Choose OS* → *Use custom* → seleziona il file scaricato
 4. *Choose Storage* → la tua microSD
 5. Clicca l'icona ⚙️ "Edit settings":
-   - ✅ Enable SSH (con password)
-   - ✅ Set username and password — **lascia username `radiosveglia`** (importante!)
-   - ✅ Configure wireless LAN (SSID + password della tua Wi-Fi)
-   - ✅ Set hostname: `radiosveglia`
+   - [] Enable SSH (con password)
+   - [] Set username and password — **lascia username `radiosveglia`** (importante!)
+   - [] Configure wireless LAN (SSID + password della tua Wi-Fi)
+   - [] Set hostname: `radiosveglia`
 6. *Write* — aspetta qualche minuto
 
 > ⚠️ **Lascia `radiosveglia` come username**. Se lo cambi, devi modificare manualmente i path nei systemd service. Vedi [DEVELOPMENT.md](DEVELOPMENT.md).
@@ -112,7 +112,7 @@ device_name = Radiosveglia
 
 **Per disabilitare la sveglia in un giorno**, lascia il campo vuoto:
 ```ini
-saturday =       # niente sveglia il sabato 😴
+saturday =       # niente sveglia il sabato
 ```
 
 **Come trovare lo `show_id` del tuo podcast**: apri Spotify, cerca il podcast, condividi il link → `https://open.spotify.com/show/16dmTJvMre4YDTUYpuJtuZ`. L'ID è la parte dopo `/show/`.
@@ -194,7 +194,7 @@ journalctl --user -u alarm.service -n 20
 
 Se tutto va bene, le casse iniziano a riprodurre l'ultimo episodio del podcast a volume crescente. **Ce l'hai fatta!** 🎉
 
-## ⏰ Cambiare la sveglia
+## Cambiare la sveglia
 
 In qualsiasi momento puoi modificare gli orari:
 
@@ -211,27 +211,27 @@ sudo nano /boot/firmware/radiosveglia.conf
 sudo reboot
 ```
 
-## 🐛 Qualcosa non funziona?
+## Qualcosa non funziona?
 
 Vedi [Troubleshooting](docs/user-guide.md#troubleshooting). I problemi più comuni:
 
-- ❓ **Il Pi non si vede in rete** → controlla SSID/password Wi-Fi nel passo 2.5
-- ❓ **L'audio non esce dalle casse** → cablaggio MAX98357A, verifica con `aplay -l`
-- ❓ **"Device 'Radiosveglia' not found"** → spotifyd non è partito, vedi i log
-- ❓ **Si sente un click all'avvio** → è caratteristico del MAX98357A, il fade-in lo riduce ma non lo elimina
+- **Il Pi non si vede in rete** → controlla SSID/password Wi-Fi nel passo 2.5
+- **L'audio non esce dalle casse** → cablaggio MAX98357A, verifica con `aplay -l`
+- **"Device 'Radiosveglia' not found"** → spotifyd non è partito, vedi i log
+- **Si sente un click all'avvio** → è caratteristico del MAX98357A, il fade-in lo riduce ma non lo elimina
 
-## 🤝 Contribuire
+## Contribuire
 
 Pull request benvenute! Vedi [DEVELOPMENT.md](DEVELOPMENT.md) per:
 - come ricompilare l'immagine
 - come modificare il codice
 - come testare le modifiche
 
-## 📜 Licenza
+## Licenza
 
 [MIT](LICENSE) — fanne quello che vuoi, attribuzione apprezzata.
 
-## 🙏 Crediti
+## Crediti
 
 - [`spotifyd`](https://github.com/Spotifyd/spotifyd) — per il daemon Spotify Connect
 - [Adafruit](https://www.adafruit.com/) — per la breakout board MAX98357A
@@ -242,5 +242,5 @@ Pull request benvenute! Vedi [DEVELOPMENT.md](DEVELOPMENT.md) per:
 ---
 
 <div align="center">
-<sub>Built with ☕ and Pi Zero. <a href="https://github.com/USER/Radiosveglia_nSp/issues">Issues & feedback</a></sub>
+<sub>Built with many Beers and Pi Zero. <a href="https://github.com/USER/Radiosveglia_nSp/issues">Issues & feedback</a></sub>
 </div>

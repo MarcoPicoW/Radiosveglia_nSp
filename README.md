@@ -10,7 +10,7 @@
 [![Platform: Pi Zero 2 W](https://img.shields.io/badge/Platform-Pi%20Zero%202%20W-c51a4a)](https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/)
 [![OS: Trixie](https://img.shields.io/badge/OS-Debian%20Trixie-a80030)](https://www.debian.org/releases/trixie/)
 
-[**Download latest release**](https://github.com/USER/Radiosveglia_nSp/releases/latest)
+[**Download latest release**](https://github.com/MarcoPicoW/Radiosveglia_nSp/releases/latest)
 &nbsp;·&nbsp;
 [**User guide**](docs/user-guide.md)
 &nbsp;·&nbsp;
@@ -75,7 +75,7 @@ The speakers go to the two outputs of the amplifier. Detailed schematic in [`doc
 
 ### Step 2 — Flash the SD
 
-1. Download the latest image: [**radiosveglia-vX.Y.img.xz**](https://github.com/USER/Radiosveglia_nSp/releases/latest)
+1. Download the latest image: [**radiosveglia-vX.Y.img.xz**](https://github.com/MarcoPicoW/Radiosveglia_nSp/releases/latest)
 2. Open **[Raspberry Pi Imager](https://www.raspberrypi.com/software/)**
 3. *Choose OS* → *Use custom* → select the downloaded file
 4. *Choose Storage* → your microSD
@@ -147,7 +147,7 @@ This is the only "technical" step. You do it once and never again.
 
 #### 5.2 — Run setup-spotify.py
 
-On your computer, download [**`setup-spotify.py`**](https://github.com/USER/Radiosveglia_nSp/releases/latest) from the same release.
+On your computer, download [**`setup-spotify.py`**](https://github.com/MarcoPicoW/Radiosveglia_nSp/releases/latest) from the same release.
 
 Open a terminal in the download folder and:
 
@@ -242,5 +242,5 @@ Pull requests welcome! See [DEVELOPMENT.md](DEVELOPMENT.md) for:
 ---
 
 <div align="center">
-<sub>Built with many Beers and Pi Zero. <a href="https://github.com/USER/Radiosveglia_nSp/issues">Issues & feedback</a></sub>
+<sub>Built with many Beers and Pi Zero. <a href="https://github.com/MarcoPicoW/Radiosveglia_nSp/issues">Issues & feedback</a></sub>
 </div>

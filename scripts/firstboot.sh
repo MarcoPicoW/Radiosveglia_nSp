@@ -116,15 +116,26 @@ as_user systemctl --user start spotifyd-bootstrap.service || \
     log "spotifyd-bootstrap failed -- will retry on next boot."
 
 # ---------------------------------------------------------------------------
-# 7. Configure spotifyd directory
+# 7. Configure spotifyd directory and audio
 # ---------------------------------------------------------------------------
 sudo -u "${RADIOSVEGLIA_USER}" mkdir -p "${RADIOSVEGLIA_HOME}/.config/spotifyd"
+
 if [ ! -f "${RADIOSVEGLIA_HOME}/.config/spotifyd/spotifyd.conf" ]; then
     cp -v "${SCRIPTS_SRC}/../spotifyd/spotifyd.conf" \
         "${RADIOSVEGLIA_HOME}/.config/spotifyd/spotifyd.conf" 2>/dev/null || \
         log "spotifyd.conf not found in /opt/radiosveglia -- user must configure manually."
     chown "${RADIOSVEGLIA_USER}:${RADIOSVEGLIA_USER}" \
         "${RADIOSVEGLIA_HOME}/.config/spotifyd/spotifyd.conf" 2>/dev/null || true
+fi
+
+# Install .asoundrc (ALSA softvol routing for hifiberry-dac / MAX98357A).
+# Only written if not already present, so manual customisations are preserved.
+if [ ! -f "${RADIOSVEGLIA_HOME}/.asoundrc" ]; then
+    cp -v "${SCRIPTS_SRC}/../spotifyd/asoundrc" \
+        "${RADIOSVEGLIA_HOME}/.asoundrc" 2>/dev/null || \
+        log "asoundrc not found in /opt/radiosveglia -- ALSA routing not configured."
+    chown "${RADIOSVEGLIA_USER}:${RADIOSVEGLIA_USER}" \
+        "${RADIOSVEGLIA_HOME}/.asoundrc" 2>/dev/null || true
 fi
 
 log "First-boot setup complete."

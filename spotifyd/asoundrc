@@ -1,0 +1,29 @@
+# ~/.asoundrc for Radiosveglia
+#
+# Routes all audio to the hifiberry-dac (MAX98357A) with a software
+# volume control (softvol), since the MAX98357A has no hardware mixer.
+#
+# The MAX98357A is mono. The "plug" plugin handles stereo-to-mono
+# downmix automatically when needed.
+
+pcm.!default {
+    type plug
+    slave.pcm "softvol"
+}
+
+pcm.softvol {
+    type softvol
+    slave.pcm "plughw:CARD=sndrpihifiberry,DEV=0"
+    control {
+        name "Master"
+        card "sndrpihifiberry"
+    }
+    min_dB -50.0
+    max_dB 0.0
+    resolution 100
+}
+
+ctl.!default {
+    type hw
+    card "sndrpihifiberry"
+}

@@ -21,7 +21,7 @@ QUICK START
 3. AUTHORIZE SPOTIFY (once, from your computer)
    Run setup-spotify.py from the release package. Full
    instructions in the README at:
-     https://github.com/USER/Radiosveglia_nSp
+     https://github.com/MarcoPicoW/Radiosveglia_nSp
 
 ============================================================
 
@@ -40,8 +40,8 @@ Method 2 (via SSH, Pi running):
 
 SUPPORT
 -------
-  Full documentation: https://github.com/USER/Radiosveglia_nSp
-  Troubleshooting:    https://github.com/USER/Radiosveglia_nSp/blob/main/docs/user-guide.md
-  Issues:             https://github.com/USER/Radiosveglia_nSp/issues
+  Full documentation: https://github.com/MarcoPicoW/Radiosveglia_nSp
+  Troubleshooting:    https://github.com/MarcoPicoW/Radiosveglia_nSp/blob/main/docs/user-guide.md
+  Issues:             https://github.com/MarcoPicoW/Radiosveglia_nSp/issues
 
 ============================================================

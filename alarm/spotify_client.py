@@ -1,16 +1,16 @@
 """
-Radiosveglia_nSp — Spotify OAuth client.
+Radiosveglia_nSp -- Spotify OAuth client.
 
-Handles the Spotify Web API authentication flow:
-  - First-time login with browser (used once on the user's PC)
-  - Token persistence to spotify_token.json
-  - Automatic refresh of access tokens (used on the headless Pi)
+Handles Spotify Web API authentication:
+  - First-time login with browser (run once via tools/setup-spotify.py)
+  - Token persistence in spotify_token.json
+  - Automatic refresh of expired access tokens (used on the headless Pi)
 
-Environment file expected: spotify.env in the same directory.
-Required variables:
-  CLIENT_ID
-  CLIENT_SECRET
-  REDIRECT_URI       (typically http://127.0.0.1:8888/callback)
+spotify_token.json is created by tools/setup-spotify.py and must contain:
+  access_token, refresh_token, client_id, client_secret, expires_at
+
+No spotify.env file is needed on the Pi. All credentials are embedded in
+spotify_token.json by setup-spotify.py at authorization time.
 """
 
 import json
@@ -23,18 +23,15 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 import requests
-from dotenv import load_dotenv
 
-# -----------------------------------------------------------------------------
-# Config / Paths
-# -----------------------------------------------------------------------------
-BASE_DIR = Path(__file__).parent
-ENV_PATH = BASE_DIR / "spotify.env"
+# ---------------------------------------------------------------------------
+# Paths
+# ---------------------------------------------------------------------------
+BASE_DIR   = Path(__file__).parent
 TOKEN_PATH = BASE_DIR / "spotify_token.json"
 
-AUTH_URL = "https://accounts.spotify.com/authorize"
+AUTH_URL  = "https://accounts.spotify.com/authorize"
 TOKEN_URL = "https://accounts.spotify.com/api/token"
-NOW_PLAYING_URL = "https://api.spotify.com/v1/me/player/currently-playing"
 
 SCOPES = " ".join([
     "user-read-playback-state",
@@ -54,112 +51,100 @@ SCOPES = " ".join([
     "user-follow-modify",
 ])
 
-# -----------------------------------------------------------------------------
-# Load env (robust)
-# -----------------------------------------------------------------------------
-load_dotenv(ENV_PATH)
 
-CLIENT_ID = os.getenv("CLIENT_ID")
-CLIENT_SECRET = os.getenv("CLIENT_SECRET")
-REDIRECT_URI = os.getenv("REDIRECT_URI")
-
-if not CLIENT_ID or not CLIENT_SECRET or not REDIRECT_URI:
-    raise SystemExit(
-        f"spotify.env not loaded or incomplete (looking at {ENV_PATH}). "
-        "Required keys: CLIENT_ID, CLIENT_SECRET, REDIRECT_URI."
-    )
-
-
-# -----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # Token persistence
-# -----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 def save_token(data: dict) -> None:
-    """Persist a token dict, computing absolute expires_at timestamp."""
+    """Persist a token dict, adding an absolute expires_at timestamp."""
     data["expires_at"] = int(time.time()) + int(data.get("expires_in", 3600))
     TOKEN_PATH.write_text(json.dumps(data, indent=2))
 
 
-def load_token() -> dict | None:
-    """Load the persisted token dict, or None if no file exists."""
-    if TOKEN_PATH.exists():
-        return json.loads(TOKEN_PATH.read_text())
-    return None
+def load_token() -> dict:
+    """
+    Load spotify_token.json. Raises RuntimeError if missing or incomplete.
+    The file is created by tools/setup-spotify.py and must contain
+    client_id, client_secret, and refresh_token.
+    """
+    if not TOKEN_PATH.exists():
+        raise RuntimeError(
+            f"spotify_token.json not found at {TOKEN_PATH}.\n"
+            "Run tools/setup-spotify.py on your computer, then copy the\n"
+            "resulting spotify_token.json to ~/alarm/ on the Pi."
+        )
+    token = json.loads(TOKEN_PATH.read_text())
+    for key in ("client_id", "client_secret", "refresh_token"):
+        if not token.get(key):
+            raise RuntimeError(
+                f"spotify_token.json is missing '{key}'.\n"
+                "Re-run tools/setup-spotify.py and copy the new file to the Pi."
+            )
+    return token
 
 
 def token_expired(token: dict) -> bool:
-    """Returns True if the access token is expired (or will expire in <60s)."""
+    """True if the access token expires within the next 60 seconds."""
     return int(token.get("expires_at", 0)) - 60 < time.time()
 
 
-def refresh_access_token(client_id: str, client_secret: str, refresh_token: str) -> str:
-    """Exchange a refresh_token for a new access_token. Persists the result."""
+def refresh_access_token(token: dict) -> str:
+    """Exchange the refresh_token for a new access_token. Persists the result."""
     r = requests.post(
         TOKEN_URL,
         data={
-            "grant_type": "refresh_token",
-            "refresh_token": refresh_token,
-            "client_id": client_id,
-            "client_secret": client_secret,
+            "grant_type":    "refresh_token",
+            "refresh_token": token["refresh_token"],
+            "client_id":     token["client_id"],
+            "client_secret": token["client_secret"],
         },
         timeout=20,
     )
     r.raise_for_status()
     data = r.json()
-
-    # Spotify may omit refresh_token in the response — keep the existing one.
-    data["refresh_token"] = refresh_token
+    # Spotify may omit refresh_token in the response -- keep the existing one.
+    data["refresh_token"] = token["refresh_token"]
+    data["client_id"]     = token["client_id"]
+    data["client_secret"] = token["client_secret"]
     save_token(data)
     return data["access_token"]
 
 
-def get_access_token(client_id: str, client_secret: str) -> str:
-    """Return a valid access token, refreshing if necessary."""
-    token = load_token()
-    if not token:
-        raise RuntimeError(
-            "No spotify_token.json found — run the initial browser login once."
-        )
-
-    if token_expired(token):
-        if "refresh_token" not in token:
-            raise RuntimeError(
-                "spotify_token.json missing refresh_token — run initial login again."
-            )
-        return refresh_access_token(client_id, client_secret, token["refresh_token"])
-
-    return token["access_token"]
-
+# ---------------------------------------------------------------------------
+# Public API used by alarm.py
+# ---------------------------------------------------------------------------
 
 def get_access_token_no_browser() -> str:
     """
-    Return a valid access token without ever opening a browser.
-    Used on the headless Pi.
+    Return a valid access token without opening a browser.
+    Used on the headless Pi. Refreshes automatically if expired.
     """
     token = load_token()
-    if not token:
-        raise RuntimeError(
-            "No spotify_token.json — initial browser login required (on a PC)."
-        )
-
-    if "refresh_token" not in token:
-        raise RuntimeError(
-            "spotify_token.json missing refresh_token — re-run initial login."
-        )
-
     if token_expired(token):
-        return refresh_access_token(CLIENT_ID, CLIENT_SECRET, token["refresh_token"])
-
+        return refresh_access_token(token)
     return token["access_token"]
 
 
-# -----------------------------------------------------------------------------
-# OAuth callback mini-server
-# -----------------------------------------------------------------------------
-auth_code_holder: dict[str, str | None] = {"code": None, "error": None}
+# ---------------------------------------------------------------------------
+# Legacy / compatibility alias
+# ---------------------------------------------------------------------------
+
+def get_access_token(client_id: str = "", client_secret: str = "") -> str:
+    """
+    Compatibility wrapper. Arguments are ignored -- credentials come from
+    spotify_token.json. Kept so any existing callers do not break.
+    """
+    return get_access_token_no_browser()
 
 
-class CallbackHandler(BaseHTTPRequestHandler):
+# ---------------------------------------------------------------------------
+# OAuth callback mini-server (used by first-time browser login only)
+# ---------------------------------------------------------------------------
+_auth: dict[str, str | None] = {"code": None, "error": None}
+
+
+class _CallbackHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         parsed = urlparse(self.path)
         if parsed.path != "/callback":
@@ -167,84 +152,88 @@ class CallbackHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(b"Not found")
             return
-
         qs = parse_qs(parsed.query)
-        if "error" in qs:
-            auth_code_holder["error"] = qs["error"][0]
-        if "code" in qs:
-            auth_code_holder["code"] = qs["code"][0]
-
+        _auth["error"] = qs.get("error", [None])[0]
+        _auth["code"]  = qs.get("code",  [None])[0]
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.end_headers()
         self.wfile.write(b"<h2>OK. You can close this window.</h2>")
 
-    def log_message(self, format, *args):
-        return  # silence the default access log
+    def log_message(self, fmt, *args):
+        return
 
 
-def _start_server() -> None:
-    """Run a tiny HTTP server until the OAuth callback arrives (or errors)."""
-    server = HTTPServer(("127.0.0.1", 8888), CallbackHandler)
-    server.timeout = 1
-    while auth_code_holder["code"] is None and auth_code_holder["error"] is None:
-        server.handle_request()
+def _run_server():
+    srv = HTTPServer(("127.0.0.1", 8888), _CallbackHandler)
+    srv.timeout = 1
+    while _auth["code"] is None and _auth["error"] is None:
+        srv.handle_request()
 
 
-# -----------------------------------------------------------------------------
-# First-time login (browser)
-# -----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# First-time browser login (called by tools/setup-spotify.py, not alarm.py)
+# ---------------------------------------------------------------------------
 
-def get_access_token_first_time_with_browser() -> str:
+def get_access_token_first_time_with_browser(
+    client_id: str,
+    client_secret: str,
+    redirect_uri: str = "http://127.0.0.1:8888/callback",
+) -> str:
     """
-    Run the full OAuth Authorization Code flow. Opens a browser, waits for the
-    user to authorize, captures the code on http://127.0.0.1:8888/callback,
-    and exchanges it for tokens. Persists everything in spotify_token.json.
+    Full OAuth Authorization Code flow. Opens a browser, waits for the
+    callback, exchanges the code for tokens, persists everything to
+    spotify_token.json (including client_id and client_secret).
     """
-    auth_link = (
-        f"{AUTH_URL}?response_type=code"
-        f"&client_id={CLIENT_ID}"
-        f"&scope={SCOPES}"
-        f"&redirect_uri={REDIRECT_URI}"
-    )
+    from urllib.parse import urlencode
 
-    print("Opening browser to authorize Spotify:")
-    print(auth_link)
+    auth_url = AUTH_URL + "?" + urlencode({
+        "response_type": "code",
+        "client_id":     client_id,
+        "scope":         SCOPES,
+        "redirect_uri":  redirect_uri,
+    })
 
-    t = threading.Thread(target=_start_server, daemon=True)
+    print("Opening browser for Spotify authorization ...")
+    t = threading.Thread(target=_run_server, daemon=True)
     t.start()
+    webbrowser.open(auth_url)
 
-    webbrowser.open(auth_link)
-
-    # Wait up to 120s for the callback
     for _ in range(120):
-        if auth_code_holder["error"]:
-            raise SystemExit(f"Spotify Auth error: {auth_code_holder['error']}")
-        if auth_code_holder["code"]:
+        if _auth["error"] or _auth["code"]:
             break
         time.sleep(1)
 
-    code = auth_code_holder["code"]
-    if not code:
+    if _auth["error"]:
+        raise SystemExit(f"Spotify auth error: {_auth['error']}")
+    if not _auth["code"]:
         raise SystemExit(
-            "No authorization code received. "
-            "Check REDIRECT_URI and that port 8888 is free."
+            "No authorization code received within 120 s.\n"
+            "Make sure port 8888 is free and the redirect URI is correct."
         )
 
     r = requests.post(
         TOKEN_URL,
         data={
-            "grant_type": "authorization_code",
-            "code": code,
-            "redirect_uri": REDIRECT_URI,
-            "client_id": CLIENT_ID,
-            "client_secret": CLIENT_SECRET,
+            "grant_type":   "authorization_code",
+            "code":         _auth["code"],
+            "redirect_uri": redirect_uri,
+            "client_id":    client_id,
+            "client_secret": client_secret,
         },
         timeout=20,
     )
     r.raise_for_status()
-
     data = r.json()
-    save_token(data)  # this MUST contain refresh_token
 
+    if "refresh_token" not in data:
+        raise SystemExit(
+            "Spotify did not return a refresh_token. "
+            "Check app scopes and redirect URI."
+        )
+
+    # Embed credentials so the Pi can refresh without a separate .env file.
+    data["client_id"]     = client_id
+    data["client_secret"] = client_secret
+    save_token(data)
     return data["access_token"]

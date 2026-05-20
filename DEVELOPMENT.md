@@ -21,9 +21,7 @@ image, or understand how the project works internally.
 │
 ├── docs/
 │   ├── user-guide.md             -- Extended user documentation
-│   ├── architecture.md           -- System architecture overview
-│   ├── CrossCompiling - Debian Wiki.pdf
-│   └── Spotifyd.pdf
+│   └── architecture.md           -- System architecture overview
 │
 ├── scripts/                      -- Shell scripts that live on the Pi Zero
 │   ├── apply-config.sh           -- Reads radiosveglia.conf, regenerates alarm.timer
@@ -252,6 +250,24 @@ token file.
 
 **The username is hardcoded in `firstboot.sh`.** See "Changing the username"
 above.
+
+---
+
+## External references
+
+Background reading and upstream documentation:
+
+- **Adafruit MAX98357A I2S amplifier** — product guide, datasheet, and
+  wiring: https://learn.adafruit.com/adafruit-max98357-i2s-class-d-mono-amp
+- **spotifyd** — Spotify Connect daemon used on the Pi:
+  https://spotifyd.github.io/spotifyd/ (docs),
+  https://github.com/Spotifyd/spotifyd (source)
+- **Debian CrossCompiling** — background for `tools/build-spotifyd.sh`:
+  https://wiki.debian.org/CrossCompiling
+- **Spotify Web API** — playback transfer, episode fetch:
+  https://developer.spotify.com/documentation/web-api
+- **Raspberry Pi Zero 2 W** — board specs and GPIO pinout:
+  https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/
 
 ---
 

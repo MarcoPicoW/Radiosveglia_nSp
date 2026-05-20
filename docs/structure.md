@@ -16,9 +16,7 @@ Radiosveglia_nSp/
 │   └── README-FIRST.txt
 ├── docs/
 │   ├── user-guide.md
-│   ├── architecture.md
-│   ├── CrossCompiling - Debian Wiki.pdf
-│   └── Spotifyd.pdf
+│   └── architecture.md
 ├── scripts/
 │   ├── apply-config.sh
 │   ├── firstboot.sh

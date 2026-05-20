@@ -78,12 +78,13 @@ work from any machine with network access.
 
 ```bash
 git clone https://github.com/USER/Radiosveglia_nSp.git
-cd Radiosveglia_nSp/alarm
+cd Radiosveglia_nSp
 
 # Create a virtual environment
 python3 -m venv .venv
 source .venv/bin/activate
-pip install requests python-dotenv
+pip install -r requirements.txt
+cd alarm
 
 # Copy and fill in the credentials template
 cp spotify.env.example spotify.env

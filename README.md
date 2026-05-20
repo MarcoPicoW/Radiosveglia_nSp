@@ -153,13 +153,15 @@ Open a terminal in the download folder and:
 
 ```bash
 # Linux / Mac
-python3 -m pip install requests
+python3 -m pip install -r requirements.txt
 python3 setup-spotify.py
 
 # Windows (PowerShell)
-py -m pip install requests
+py -m pip install -r requirements.txt
 py setup-spotify.py
 ```
+
+> If you downloaded only `setup-spotify.py` from the release page and don't have `requirements.txt`, `pip install requests` works too — `requests` is the only dependency.
 
 The script:
 1. Prompts for Client ID and Client Secret

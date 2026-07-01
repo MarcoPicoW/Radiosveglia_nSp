@@ -9,7 +9,7 @@ Environment=XDG_RUNTIME_DIR=/run/user/%U
 Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/%U/bus
 ExecStart=%h/scripts/apply-config.sh
 ExecStartPost=systemctl --user daemon-reload
-ExecStartPost=systemctl --user restart alarm.timer
+ExecStartPost=systemctl --user --no-block restart alarm.timer
 
 StandardOutput=journal
 StandardError=journal

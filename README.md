@@ -36,6 +36,7 @@
 ## What it does
 
 - **Automated alarm** at configurable times — different schedule for each day of the week
+- **Gentle wake-up sound** — an ambient clip plays for 60 s before the podcast, fading in from silence
 - **Latest podcast episode** fetched fresh every morning via the Spotify Web API
 - **Quality audio** through a MAX98357A I2S amplifier and external speakers
 - **Volume fade-in** at startup to soften the amplifier "click"
@@ -212,6 +213,41 @@ ssh radiosveglia@radiosveglia.local
 sudo nano /boot/firmware/radiosveglia.conf
 sudo reboot
 ```
+
+## Changing the wake-up sound
+
+Before the podcast starts, the alarm plays a short ambient sound that fades in
+from near-silence up to your configured `volume`. The sounds live in the
+`alarm/alarm_sounds/` folder on the Pi (`/home/radiosveglia/alarm/alarm_sounds/`)
+as plain `.mp3` files:
+
+```
+alarm_sounds/
+├── Cozy_midnight_rain.mp3
+├── Peaceful_ocean.mp3
+└── Soft_forest.mp3
+```
+
+**Each morning one file is chosen at random.** To customise, just add or remove
+`.mp3` files — no code change needed:
+
+- **Multiple files** → a different one is picked each day.
+- **Only one file** → that one plays every morning.
+- **Folder empty or missing** → the wake-up sound is skipped and the podcast
+  starts directly (no error).
+
+Copy your own files over SSH, for example:
+
+```bash
+# Add a new sound
+scp My_birdsong.mp3 radiosveglia@radiosveglia.local:~/alarm/alarm_sounds/
+
+# Remove a bundled one
+ssh radiosveglia@radiosveglia.local 'rm ~/alarm/alarm_sounds/Soft_forest.mp3'
+```
+
+> Keep the files reasonably short and in `.mp3` format. A clip shorter than
+> 60 s is fine — it loops to fill the full fade-in.
 
 ## Something not working?
 

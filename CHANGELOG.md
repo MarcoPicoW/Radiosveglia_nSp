@@ -4,6 +4,17 @@ All notable changes to this project will be documented here.
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- Local wake-up sound: a random ambient clip from `alarm/alarm_sounds/`
+  plays on the Pi for 60 s before the podcast, with the volume fading from
+  1 up to the configured level. Uses `mpg123` (installed at first boot) and
+  the ALSA softvol `Master` control; degrades gracefully if unavailable.
+
+---
+
 ## [0.1.0] - 2026-05-20
 
 First public release.

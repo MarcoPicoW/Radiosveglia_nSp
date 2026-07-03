@@ -62,6 +62,12 @@ chown -R "${RADIOSVEGLIA_USER}:${RADIOSVEGLIA_USER}" "${RADIOSVEGLIA_HOME}/scrip
 log "Installing alarm code to ${RADIOSVEGLIA_HOME}/alarm/ ..."
 sudo -u "${RADIOSVEGLIA_USER}" mkdir -p "${RADIOSVEGLIA_HOME}/alarm"
 cp -vn "${SCRIPTS_SRC}/../alarm/"*.py "${RADIOSVEGLIA_HOME}/alarm/" 2>/dev/null || true
+
+# Bundled wake-up sounds played locally before the podcast starts.
+if [ -d "${SCRIPTS_SRC}/../alarm/alarm_sounds" ]; then
+    cp -rvn "${SCRIPTS_SRC}/../alarm/alarm_sounds" \
+        "${RADIOSVEGLIA_HOME}/alarm/" 2>/dev/null || true
+fi
 chown -R "${RADIOSVEGLIA_USER}:${RADIOSVEGLIA_USER}" "${RADIOSVEGLIA_HOME}/alarm"
 
 log "Installing systemd user units ..."
@@ -118,6 +124,15 @@ as_user systemctl --user start spotifyd-bootstrap.service || \
 # ---------------------------------------------------------------------------
 # 7. Configure spotifyd directory and audio
 # ---------------------------------------------------------------------------
+
+# mpg123 plays the local wake-up sound before the podcast. Small, optional:
+# if the install fails, alarm.py logs a warning and skips the sound.
+if ! command -v mpg123 >/dev/null 2>&1; then
+    log "Installing mpg123 (local wake-up sound player) ..."
+    DEBIAN_FRONTEND=noninteractive apt-get install -y mpg123 \
+        || log "mpg123 install failed -- wake-up sound will be skipped."
+fi
+
 sudo -u "${RADIOSVEGLIA_USER}" mkdir -p "${RADIOSVEGLIA_HOME}/.config/spotifyd"
 
 if [ ! -f "${RADIOSVEGLIA_HOME}/.config/spotifyd/spotifyd.conf" ]; then

@@ -36,6 +36,7 @@
 ## Cosa fa
 
 - **Sveglia automatica** a orari configurabili — anche diversi per ogni giorno della settimana
+- **Suono di risveglio graduale** — una traccia ambientale suona per 60 s prima del podcast, salendo dal silenzio
 - **Ultimo episodio del podcast** che preferisci, scaricato fresco ogni mattina via Spotify Web API
 - **Audio di qualità** tramite amplificatore I2S MAX98357A e casse esterne
 - **Volume fade-in** all'avvio per ridurre il "click" dell'amplificatore
@@ -212,6 +213,41 @@ ssh radiosveglia@radiosveglia.local
 sudo nano /boot/firmware/radiosveglia.conf
 sudo reboot
 ```
+
+## Cambiare il suono di risveglio
+
+Prima che parta il podcast, la sveglia riproduce un breve suono ambientale che
+sale dal quasi-silenzio fino al `volume` configurato. I suoni si trovano nella
+cartella `alarm/alarm_sounds/` sul Pi (`/home/radiosveglia/alarm/alarm_sounds/`)
+come semplici file `.mp3`:
+
+```
+alarm_sounds/
+├── Cozy_midnight_rain.mp3
+├── Peaceful_ocean.mp3
+└── Soft_forest.mp3
+```
+
+**Ogni mattina ne viene scelto uno a caso.** Per personalizzare basta aggiungere
+o rimuovere file `.mp3` — nessuna modifica al codice:
+
+- **Più file** → ogni giorno ne suona uno diverso.
+- **Un solo file** → suona sempre quello.
+- **Cartella vuota o assente** → il suono di risveglio viene saltato e il podcast
+  parte direttamente (nessun errore).
+
+Copia i tuoi file via SSH, per esempio:
+
+```bash
+# Aggiungi un nuovo suono
+scp My_birdsong.mp3 radiosveglia@radiosveglia.local:~/alarm/alarm_sounds/
+
+# Rimuovi uno di quelli inclusi
+ssh radiosveglia@radiosveglia.local 'rm ~/alarm/alarm_sounds/Soft_forest.mp3'
+```
+
+> Tieni i file abbastanza corti e in formato `.mp3`. Una traccia più corta di
+> 60 s va benissimo — viene messa in loop per riempire tutto il fade-in.
 
 ## Qualcosa non funziona?
 

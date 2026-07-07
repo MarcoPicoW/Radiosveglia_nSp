@@ -17,6 +17,12 @@
 #    - missing config         → uses defaults (06:30 every day)
 #    - malformed line         → that day is skipped, warning to stderr
 #    - no valid days at all   → falls back to a single OnCalendar=06:30 daily
+#
+#  Also ensures ~/.asoundrc exists (idempotent, every boot). It's normally
+#  installed once by radiosveglia-firstboot.service, but that unit only ever
+#  runs on a device's very first boot — devices provisioned before it existed,
+#  or updated by hand, can be missing it. Without it the "Master" softvol
+#  control alarm.py uses for the wake-up-sound volume fade doesn't exist.
 # =============================================================================
 
 set -euo pipefail
@@ -24,6 +30,7 @@ set -euo pipefail
 CONFIG_FILE="${RADIOSVEGLIA_CONFIG:-/boot/firmware/radiosveglia.conf}"
 TIMER_FILE="${HOME}/.config/systemd/user/alarm.timer"
 TIMER_DIR="$(dirname "${TIMER_FILE}")"
+ASOUNDRC_FILE="${HOME}/.asoundrc"
 
 # Ordered list — systemd is fine with any order, but humans prefer Mon→Sun
 DAYS=(monday tuesday wednesday thursday friday saturday sunday)
@@ -35,6 +42,51 @@ declare -A DAY_ABBREV=(
 )
 
 mkdir -p "${TIMER_DIR}"
+
+# -----------------------------------------------------------------------------
+# Write ~/.asoundrc if it isn't already there. Never overwrites an existing
+# file, so manual customisations survive.
+# -----------------------------------------------------------------------------
+ensure_asoundrc() {
+  if [[ -f "${ASOUNDRC_FILE}" ]]; then
+    return 0
+  fi
+
+  echo "~/.asoundrc missing — installing default (hifiberry-dac softvol routing)"
+  cat > "${ASOUNDRC_FILE}" <<'EOF'
+# ~/.asoundrc for Radiosveglia
+#
+# Routes all audio to the hifiberry-dac (MAX98357A) with a software
+# volume control (softvol), since the MAX98357A has no hardware mixer.
+#
+# The MAX98357A is mono. The "plug" plugin handles stereo-to-mono
+# downmix automatically when needed.
+
+pcm.!default {
+    type plug
+    slave.pcm "softvol"
+}
+
+pcm.softvol {
+    type softvol
+    slave.pcm "plughw:CARD=sndrpihifiberry,DEV=0"
+    control {
+        name "Master"
+        card "sndrpihifiberry"
+    }
+    min_dB -50.0
+    max_dB 0.0
+    resolution 100
+}
+
+ctl.!default {
+    type hw
+    card "sndrpihifiberry"
+}
+EOF
+}
+
+ensure_asoundrc
 
 # -----------------------------------------------------------------------------
 # Read raw value for a given key under [alarm], stripping inline comments and

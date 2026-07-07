@@ -13,6 +13,17 @@ All notable changes to this project will be documented here.
   1 up to the configured level. Uses `mpg123` (installed at first boot) and
   the ALSA softvol `Master` control; degrades gracefully if unavailable.
 
+### Fixed
+
+- `apply-config.sh` now installs `~/.asoundrc` if it's missing (idempotent,
+  runs every boot). It was previously only written once by
+  `radiosveglia-firstboot.service`, so devices provisioned before that unit
+  existed — or updated by hand — never got it, silently breaking the
+  wake-up-sound volume fade (the `Master` softvol control it depends on
+  doesn't exist without it).
+- `alarm.py` now logs a warning when `amixer` exits with a non-zero status,
+  instead of swallowing the failure entirely.
+
 ---
 
 ## [0.1.0] - 2026-05-20

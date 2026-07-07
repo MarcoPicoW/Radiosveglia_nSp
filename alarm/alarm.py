@@ -128,12 +128,18 @@ def start_playback(token: str, device_id: str, uri: str) -> None:
 def _set_alsa_volume(percent: int) -> None:
     """Set the ALSA softvol 'Master' control (0-100). Best-effort."""
     try:
-        subprocess.run(
+        result = subprocess.run(
             ["amixer", "-c", ALSA_CARD, "sset", ALSA_CONTROL, f"{percent}%"],
             check=False,
             stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
         )
+        if result.returncode != 0:
+            logger.warning(
+                "amixer failed to set ALSA volume to %d%% (rc=%d): %s",
+                percent, result.returncode, result.stderr.strip(),
+            )
     except OSError as e:
         logger.warning("Failed to set ALSA volume to %d%%: %s", percent, e)
 

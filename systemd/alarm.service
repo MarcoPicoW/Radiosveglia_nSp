@@ -9,6 +9,14 @@ Type=oneshot
 Environment=XDG_RUNTIME_DIR=/run/user/%U
 Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/%U/bus
 
+# spotifyd can silently drop its Spotify Connect session after a network
+# hiccup (websocket error) without the process actually exiting, so
+# systemd's Restart=always on spotifyd.service never kicks in. Force a
+# fresh spotifyd session before every alarm run so find_device() in
+# alarm.py never has to deal with a "zombie" daemon.
+ExecStartPre=/usr/bin/systemctl --user restart spotifyd.service
+ExecStartPre=/usr/bin/sleep 8
+
 # The alarm script reads all settings from /boot/firmware/radiosveglia.conf.
 # Secrets (client_id, client_secret) are embedded in spotify_token.json
 # after running setup-spotify.py. No separate env file is required.

@@ -153,6 +153,16 @@ if [ ! -f "${RADIOSVEGLIA_HOME}/.asoundrc" ]; then
         "${RADIOSVEGLIA_HOME}/.asoundrc" 2>/dev/null || true
 fi
 
+# Disable Wi-Fi power saving. With it on, the Pi Zero 2 W's link naps long
+# enough for spotifyd to lose its Spotify connection mid-song; the next
+# track's decryption key then times out and librespot plays the still-
+# encrypted bytes as audio (a loud screech) before stopping.
+if [ -d /etc/NetworkManager/conf.d ]; then
+    log "Disabling Wi-Fi power saving ..."
+    printf '[connection]\nwifi.powersave = 2\n' \
+        > /etc/NetworkManager/conf.d/radiosveglia-wifi-powersave.conf
+fi
+
 log "First-boot setup complete."
 log "Reboot the Pi to start all services cleanly:"
 log "  sudo reboot"

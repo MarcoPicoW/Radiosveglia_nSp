@@ -103,8 +103,9 @@ def refresh_access_token(token: dict) -> str:
     )
     r.raise_for_status()
     data = r.json()
-    # Spotify may omit refresh_token in the response -- keep the existing one.
-    data["refresh_token"] = token["refresh_token"]
+    # Spotify may rotate the refresh_token (the old one then stops working)
+    # or omit it -- only fall back to the existing one when it's omitted.
+    data["refresh_token"] = data.get("refresh_token") or token["refresh_token"]
     data["client_id"]     = token["client_id"]
     data["client_secret"] = token["client_secret"]
     save_token(data)

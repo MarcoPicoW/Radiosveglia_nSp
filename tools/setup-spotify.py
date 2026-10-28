@@ -184,6 +184,9 @@ def main() -> int:
         r.raise_for_status()
     except requests.RequestException as e:
         print(f"\nERROR: Token exchange failed: {e}")
+        if e.response is not None:
+            # Spotify explains the failure here, e.g. invalid_client = bad secret.
+            print(f"Spotify says: {e.response.text}")
         return 1
 
     data = r.json()
